@@ -9,13 +9,13 @@ Filter logs in real-time using fields like level, message, resourceId, traceId, 
 
 Highlight matched keywords in the log list
 
-View a log-level summary chart that updates in real-time
+View a log-level summary chart that updates in real-time (BONUS)
 
-Switch between light and dark themes
+Switch between cyberpunk and Rust themes ( by default is cyberpunk)
 
 Store and retrieve logs locally using a JSON file
 
-Push new log entries to the frontend via WebSocket without needing to refresh
+Push new log entries to the frontend via WebSocket without needing to refresh (BONUS)
 
 Maintain filters and UI state dynamically while new logs arrive
 
@@ -34,7 +34,7 @@ Filtering supports:
 
 Partial text match (case-insensitive)
 
-Date range filtering
+Date range filtering 
 
 Level, traceId, spanId, commit, resourceId
 
@@ -47,20 +47,20 @@ UI includes:
 
 Filter bar with debounce on message search
 
-Realtime chart using Recharts
+Realtime chart using Recharts (BONUS)
 
 Realtime log list with highlight for matched filters
 
-Theme toggle (cyberpunk / rust)
+Theme toggle (cyberpunk / rust) (BONUS)
 
-WebSocket client auto-receives new logs and updates the list
+WebSocket client auto-receives new logs and updates the list (BONUS)
 
-Clear filters button resets all fields including debounced input
+Clear filters button resets all fields including debounced input (BONUS)
 
 
 
 # How to run the project locally
-# Prerequisites
+# Prerequisites (NODE 20 IS MANDATORY)
 Node.js v20 installed
 
 You can install using nvm install 20
@@ -73,7 +73,9 @@ npm installed
 
 # Commands: (in root)
 npm install
+
 npm run build   
+
 npm run start
 
 
@@ -90,3 +92,20 @@ npm run start
     "parentResourceId": "cluster-01"
   }
 }
+
+# INVALID LOG:
+{
+  "level": "fatal",                     // Invalid value (must be "error", "warn", "info", or "debug")
+  "message": 404,                       // Invalid type (should be a string)
+  "resourceId": "",                     // Invalid value (empty string is not useful)
+  "timestamp": "15-10-2023 14:00",      // Invalid format (not ISO 8601)
+  "traceId": null,                      // Invalid type (should be a string)
+  "spanId": 12345,                      // Invalid type (should be a string)
+  "commit": true,                       // Invalid type (should be a string)
+  "metadata": {
+    // Missing required field 'parentResourceId'
+    "extra": "unexpected"
+  },
+  "extraField": "should be removed"     // additionalProperties not allowed
+}
+
