@@ -3,6 +3,8 @@ const router = express.Router();
 const logsService = require("../services/logs.services");
 const { validateLog } = require("../utils/schema");
 
+// Handler for api
+
 router.post("/logs", async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {

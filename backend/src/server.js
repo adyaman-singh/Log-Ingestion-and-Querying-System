@@ -10,17 +10,14 @@ if (!fs.existsSync(LOG_FILE_PATH)) {
   fs.writeFileSync(LOG_FILE_PATH, "[]");
 }
 
-const server = http.createServer(app); // ✅ wrap express app
+const server = http.createServer(app); // socket uses raw http server
 const io = new Server(server, {
   cors: {
     origin: "*",
   },
 });
 
-// Make Socket.IO instance accessible to routes
 app.set("io", io);
-
-// ✅ Start the server (important!)
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { LOG_FILE_PATH } = require("../config/constants");
 
+// method to fetch files from json
 const getLogsFromFile = () => {
   try {
     if (!fs.existsSync(LOG_FILE_PATH)) return [];
@@ -13,16 +14,21 @@ const getLogsFromFile = () => {
   }
 };
 
+// method to write in the json
 const saveLogsToFile = (logs) => {
   fs.writeFileSync(LOG_FILE_PATH, JSON.stringify(logs, null, 2));
 };
 
+// method to create a log which will be added to json file in memory
 exports.createLog = (log) => {
   const logs = getLogsFromFile();
   logs.push(log);
   saveLogsToFile(logs);
   return log;
 };
+
+
+// fetching logs
 
 exports.getLogs = (filters) => {
   let logs = getLogsFromFile();
