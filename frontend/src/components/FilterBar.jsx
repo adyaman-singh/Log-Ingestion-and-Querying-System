@@ -1,24 +1,25 @@
 import { useState, useEffect } from "react";
-import { format, subDays } from "date-fns";
+import { subDays } from "date-fns";
 import useDebounce from "../hooks/useDebounce";
+import { createLog } from "../api/logsApi";
 
 /**
  * FilterBar Component
  * - Provides UI controls to filter logs by level, message, resourceId, etc.
  * - Debounces the message input to avoid frequent API calls.
+ * - Also includes a log generator for testing/demo purposes.
  */
-
 const FilterBar = ({ filters, setFilters }) => {
   const [searchTerm, setSearchTerm] = useState(filters.message);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  // Update message filter when searchTerm changes (using debounce)
+  const [selectedLevel, setSelectedLevel] = useState("info");
+  const [customMessage, setCustomMessage] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     setFilters((prev) => ({ ...prev, message: debouncedSearchTerm }));
   }, [debouncedSearchTerm, setFilters]);
-
-  // Sets the timestamp range based on number of days
 
   const handleDateChange = (days) => {
     const endDate = new Date();
@@ -30,8 +31,46 @@ const FilterBar = ({ filters, setFilters }) => {
     });
   };
 
+  // Default sample messages, you can also send your own message
+  const sampleMessages = {
+    error: "Database connection failed.",
+    warn: "High memory usage detected.",
+    info: "User signed in successfully.",
+    debug: "Cache lookup completed.",
+  };
+
+  const generateSampleLog = async () => {
+    const now = new Date().toISOString();
+    const level = selectedLevel;
+
+    const log = {
+      level,
+      message: customMessage || sampleMessages[level],
+      resourceId: `demo-service-${level}`,
+      timestamp: now,
+      traceId: `trace-${Math.random().toString(36).slice(2, 8)}`,
+      spanId: `span-${Math.random().toString(36).slice(2, 8)}`,
+      commit: Math.random().toString(36).substring(2, 8),
+      metadata: {
+        parentResourceId: `parent-${level}`,
+      },
+    };
+
+    try {
+      setIsGenerating(true);
+      await createLog(log);
+    } catch (err) {
+      console.error("Failed to generate log:", err);
+      alert("Something went wrong while generating the log.");
+    } finally {
+      setIsGenerating(false);
+      setCustomMessage("");
+    }
+  };
+
   return (
     <div className="filter-bar">
+      {/* Filtering Controls */}
       <div className="filter-group">
         <label>Log Level:</label>
         <select
@@ -45,6 +84,7 @@ const FilterBar = ({ filters, setFilters }) => {
           <option value="debug">Debug</option>
         </select>
       </div>
+
       <div className="filter-group">
         <label>Search Message:</label>
         <input
@@ -54,6 +94,7 @@ const FilterBar = ({ filters, setFilters }) => {
           placeholder="Search log messages..."
         />
       </div>
+
       <div className="filter-group">
         <label>Resource ID:</label>
         <input
@@ -75,8 +116,8 @@ const FilterBar = ({ filters, setFilters }) => {
           placeholder="Filter by Trace ID"
         />
       </div>
+
       <div className="filter-group">
-        {" "}
         <label>Span ID:</label>
         <input
           type="text"
@@ -85,8 +126,8 @@ const FilterBar = ({ filters, setFilters }) => {
           placeholder="Filter by Span ID"
         />
       </div>
+
       <div className="filter-group">
-        {" "}
         <label>Commit:</label>
         <input
           type="text"
@@ -95,6 +136,7 @@ const FilterBar = ({ filters, setFilters }) => {
           placeholder="Filter by Commit"
         />
       </div>
+
       <div className="filter-group">
         <label>Time Range:</label>
         <div className="time-buttons">
@@ -103,6 +145,8 @@ const FilterBar = ({ filters, setFilters }) => {
           <button onClick={() => handleDateChange(30)}>Last 30d</button>
         </div>
       </div>
+
+      {/* Clear All Filters */}
       <div className="filter-group">
         <label>Clear Filters:</label>
         <button
@@ -122,6 +166,35 @@ const FilterBar = ({ filters, setFilters }) => {
           }}
         >
           Clear Filters
+        </button>
+      </div>
+
+      {/* Log Generator Section */}
+      <div className="filter-group">
+        <label>Generate Sample Log:</label>
+        <select
+          value={selectedLevel}
+          onChange={(e) => setSelectedLevel(e.target.value)}
+        >
+          <option value="error">Error</option>
+          <option value="warn">Warn</option>
+          <option value="info">Info</option>
+          <option value="debug">Debug</option>
+        </select>
+        <input
+          type="text"
+          value={customMessage}
+          onChange={(e) => setCustomMessage(e.target.value)}
+          placeholder="Optional custom message"
+          style={{ marginTop: "5px" }}
+        />
+        <button
+          className="clear-btn"
+          onClick={generateSampleLog}
+          disabled={isGenerating}
+          style={{ marginTop: "6px" }}
+        >
+          {isGenerating ? "Generating..." : "Generate Log"}
         </button>
       </div>
     </div>

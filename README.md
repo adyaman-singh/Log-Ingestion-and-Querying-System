@@ -5,6 +5,8 @@ This system allows you to:
 
 Ingest log entries via a REST API
 
+You can also add Custom Logs from UI, I've given the functionality to create logs for testing (BONUS)
+
 Filter logs in real-time using fields like level, message, resourceId, traceId, spanId, commit, and timestamps
 
 Highlight matched keywords in the log list
@@ -52,6 +54,8 @@ Realtime chart using Recharts (BONUS)
 Realtime log list with highlight for matched filters
 
 Theme toggle (cyberpunk / rust) (BONUS)
+
+Log Creation Button (BONUS)
 
 WebSocket client auto-receives new logs and updates the list (BONUS)
 
